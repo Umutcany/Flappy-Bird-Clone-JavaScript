@@ -28,7 +28,11 @@ let bottomPipeImg;
 // physics
 let velocityX= -2; // pipes'ın sola geliş hızı.
 let velocityY= 0 // kuşun zıplama hızı.
+let gravity = 0.4; // 
 
+
+let gameOver=false
+let score = 0;
  
 
 let bird = {
@@ -76,22 +80,62 @@ window.onload = function() {
 function update() {
 
     requestAnimationFrame(update)
+    if (gameOver) {
+        return
+    }
     context.clearRect(0, 0, board.width, board.height)
 
     //bird
-    bird.y += velocityY
+    velocityY += gravity
+    // bird.y += velocityY
+    bird.y=Math.max(bird.y + velocityY, 0) // apply gravity to current bird.y, limit the bird.y to top of the canvas
     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height)
+
+    if(bird.y > board.height) {
+        gameOver = true
+    }
+
 
     //pipes
     for (let i=0; i< pipeArray.length; i++) {
         let pipe  = pipeArray[i];
         pipe.x += velocityX;
         context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height);
+
+        if(!pipe.passed && bird.x > pipe.x + pipe.width) {
+            score +=0.5;  // 0.5 çünkü 2 tane pipe var.
+            pipe.passed = true;
+        }      
+
+        if(detectCollision(bird, pipe)) {
+            gameOver = true;
+        }
     }
+
+    //clear pipes
+    while(pipeArray.length > 0 && pipeArray[0].x < -pipeWidth) {
+
+        pipeArray.shift() // ilk elementi array'den siler.
+
+    }
+
+    
+    //score
+    context.fillStyle= "white";
+    context.font="45px sans-serif"
+    context.fillText(score, 5, 45) // x pozisyonu 5 y konumu 45
+
+    if (gameOver) {
+        context.fillText('OYUN BİTTİ', 5, 90) 
+    }
+
 }
 
-
 function placePipes() {
+
+    if (gameOver) {
+        return
+    }
 
     // (0-1) * pipeHeight/2.
     // 0 -> -128 (pipeHeight/4)
@@ -129,5 +173,46 @@ function moveBird(e) {
 
         //jump
         velocityY=-6;
+
+
+        //reset game
+        if (gameOver) {
+            bird.y = birdY;
+            pipeArray = [];
+            score= 0;
+            gameOver= false
+        }
+
     }
 }
+
+function detectCollision(a, b) {
+    // İki dikdörtgenin çarpışıp çarpışmadığını kontrol eder
+  
+    // a nesnesinin koordinatları
+    let aLeft = a.x;
+    let aRight = a.x + a.width;
+    let aTop = a.y;
+    let aBottom = a.y + a.height;
+  
+    // b nesnesinin koordinatları
+    let bLeft = b.x;
+    let bRight = b.x + b.width;
+    let bTop = b.y;
+    let bBottom = b.y + b.height;
+  
+    // Çarpışma kontrolü
+    if (
+      aLeft < bRight &&
+      aRight > bLeft &&
+      aTop < bBottom &&
+      aBottom > bTop
+    ) {
+      // İki dikdörtgen çarpıştı
+      return true;
+    }
+  
+    // Çarpışma yok
+    return false;
+  }
+  
