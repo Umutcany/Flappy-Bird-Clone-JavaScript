@@ -27,6 +27,7 @@ let bottomPipeImg;
 
 // physics
 let velocityX= -2; // pipes'ın sola geliş hızı.
+let velocityY= 0 // kuşun zıplama hızı.
 
  
 
@@ -68,6 +69,8 @@ window.onload = function() {
     requestAnimationFrame(update)
 
     setInterval(placePipes, 1500) //every 1.5 seconds.
+
+    document.addEventListener("keydown", moveBird);
 }
 
 function update() {
@@ -76,6 +79,7 @@ function update() {
     context.clearRect(0, 0, board.width, board.height)
 
     //bird
+    bird.y += velocityY
     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height)
 
     //pipes
@@ -94,7 +98,7 @@ function placePipes() {
     // 1 -> -128 -256 (pipeHeight/4 - pipeHeight/2)= -3/4 pipeHeight
 
     let randomPipeY = pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2); // boruların rastgele şekilde gelmesini istiyorum.
-
+    let openingSpace = board.height/4;
 
     let topPipe = {
         img : topPipeImg,
@@ -108,6 +112,22 @@ function placePipes() {
 
     pipeArray.push(topPipe)
 
+    let bottomPipe = {
+        img: bottomPipeImg,
+        x:pipeX,
+        y: randomPipeY + pipeHeight + openingSpace,
+        width:pipeWidth,
+        height:pipeHeight,
+        passed:false
+    }
 
+    pipeArray.push(bottomPipe)
 }
 
+function moveBird(e) {
+    if(e.code =="Space" || e.code =="ArrowUp" || e.code=="KeyX") {
+
+        //jump
+        velocityY=-6;
+    }
+}
