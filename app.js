@@ -88,10 +88,18 @@ function update() {
 
 
 function placePipes() {
+
+    // (0-1) * pipeHeight/2.
+    // 0 -> -128 (pipeHeight/4)
+    // 1 -> -128 -256 (pipeHeight/4 - pipeHeight/2)= -3/4 pipeHeight
+
+    let randomPipeY = pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2); // boruların rastgele şekilde gelmesini istiyorum.
+
+
     let topPipe = {
         img : topPipeImg,
         x : pipeX,
-        y : pipeY,
+        y : randomPipeY,
         width : pipeWidth,
         height : pipeHeight,
         passed : false
@@ -99,5 +107,7 @@ function placePipes() {
 
 
     pipeArray.push(topPipe)
+
+
 }
 
