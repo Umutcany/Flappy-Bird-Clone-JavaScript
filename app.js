@@ -16,7 +16,7 @@ let birdImg;
 
 
 //pipes 
-let pipe = [];
+let pipeArray = [];
 let pipeWidth= 64; // width/height ratio = 384/3072= 1/8
 let pipeHeight= 512;
 let pipeX= boardWidth
@@ -25,6 +25,10 @@ let pipeY=0;
 let topPipeImg;
 let bottomPipeImg;
 
+// physics
+let velocityX= -2; // pipes'ın sola geliş hızı.
+
+ 
 
 let bird = {
     x : birdX, //Kuşun x konumu
@@ -77,7 +81,8 @@ function update() {
     //pipes
     for (let i=0; i< pipeArray.length; i++) {
         let pipe  = pipeArray[i];
-        context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height)
+        pipe.x += velocityX;
+        context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height);
     }
 }
 
